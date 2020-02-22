@@ -29,8 +29,8 @@ float Process::CpuUtilization() {
     long int total_time = processInfo[processInfoElem::utime_] + processInfo[processInfoElem::stime_];
     total_time += processInfo[processInfoElem::cutime_] + processInfo[processInfoElem::cstime_];
     float seconds = (float) Process::UpTime();
-    float cpu_usage = ((total_time / hertz_) / seconds);
-    return cpu_usage; 
+    cpuUsage_ = ((total_time / hertz_) / seconds);
+    return cpuUsage_; 
 }
 
 // TODO: Return the command that generated this process
@@ -58,5 +58,6 @@ long int Process::UpTime() {
 }
 
 // TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+bool Process::operator>(Process const& a) const { 
+    return (cpuUsage_ > a.cpuUsage_);
+}
