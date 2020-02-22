@@ -14,6 +14,13 @@ using std::size_t;
 using std::string;
 using std::vector;
 
+System::System() {
+    auto process_ids = LinuxParser::Pids();
+    for (int id : process_ids) {
+        processes_.push_back(Process(id));
+    }    
+}
+
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
