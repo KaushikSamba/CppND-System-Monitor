@@ -22,6 +22,7 @@ class Process {
     int pid_ = 0;
     std::string user_ = "";
     std::string command_ = "";
+    const long int hertz_;
 };
 
 #endif

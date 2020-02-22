@@ -11,12 +11,28 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid) : pid_(pid) {}
+Process::Process(int pid) : pid_(pid), hertz_(sysconf(_SC_CLK_TCK)) { }
 // TODO: Return this process's ID
 int Process::Pid() { return pid_; }
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+// Returns a value between 0 and 1.
+float Process::CpuUtilization() { 
+    long systemUpTime = LinuxParser::UpTime();
+    std::vector<long int> processInfo = LinuxParser::Cpu(pid_);
+    enum processInfoElem {
+        utime_ = 0, 
+        stime_, 
+        cutime_, 
+        cstime_, 
+        starttime_
+    };
+    long int total_time = processInfo[processInfoElem::utime_] + processInfo[processInfoElem::stime_];
+    total_time += processInfo[processInfoElem::cutime_] + processInfo[processInfoElem::cstime_];
+    float seconds = systemUpTime - (processInfo[processInfoElem::starttime_] / hertz_);
+    float cpu_usage = 100 * ((total_time / hertz_) / seconds);
+    return cpu_usage; 
+}
 
 // TODO: Return the command that generated this process
 string Process::Command() { 
@@ -38,7 +54,10 @@ string Process::User() {
 }
 
 // TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
+long int Process::UpTime() { 
+    auto uptime = LinuxParser::UpTime(pid_); 
+    return uptime/hertz_;
+}
 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function

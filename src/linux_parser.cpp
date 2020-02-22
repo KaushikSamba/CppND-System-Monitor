@@ -109,8 +109,6 @@ float LinuxParser::MemoryUtilization() {
 long LinuxParser::UpTime() { 
   std::ifstream stream(kProcDirectory + kUptimeFilename); 
   std::string line, value;
-  // long int uptime; 
-  // return 128493;  
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream stringstream(line); 
@@ -137,11 +135,9 @@ long LinuxParser::IdleJiffies() { return 0; }
 vector<string> LinuxParser::CpuUtilization() { 
   std::ifstream fileStream(kProcDirectory + kStatFilename);
   std::string line;
-  std::string cpu, user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
   if (fileStream.is_open()) {
     std::getline(fileStream, line);
     std::istringstream lineStream(line);
-    // lineStream >> cpu >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice;
     std::vector<std::string> cpu_util_info{std::istream_iterator<string>{lineStream}, 
     std::istream_iterator<string>{}};
     cpu_util_info.erase(cpu_util_info.begin());
@@ -255,4 +251,32 @@ string LinuxParser::User(int pid) {
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid[[maybe_unused]]) { return 0; }
+long LinuxParser::UpTime(int pid) { 
+  std::ifstream fileStream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  std::string line;
+  if (fileStream.is_open()) {
+    std::getline(fileStream, line);
+    std::istringstream lineStream(line);
+    std::vector<std::string> data{std::istream_iterator<string>{lineStream}, std::istream_iterator<string>{}};
+    return std::stol(data[21]);
+  }
+  return 0;
+}
+
+std::vector<long int> LinuxParser::Cpu(int pid) {
+  std::vector<long int> processInfo = {};
+  std::ifstream fileStream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  std::string line;
+  if (fileStream.is_open()) {
+    std::getline(fileStream, line);
+    std::istringstream lineStream(line);
+    std::vector<std::string> data {std::istream_iterator<string>{lineStream}, std::istream_iterator<string>{}};
+    processInfo.push_back(std::stol(data[13]));
+    processInfo.push_back(std::stol(data[14]));
+    processInfo.push_back(std::stol(data[15]));
+    processInfo.push_back(std::stol(data[16]));
+    processInfo.push_back(std::stol(data[21]));
+    return processInfo;
+  }
+  return {};
+}
