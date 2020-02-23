@@ -21,8 +21,14 @@ class Process {
     int pid_ = 0;
     std::string user_ = "";
     std::string command_ = "";
-    long int hertz_;
     float cpuUsage_ = 0;
+    enum processInfoElem {
+        utime_ = 0, 
+        stime_, 
+        cutime_, 
+        cstime_, 
+        starttime_
+    };
 };
 
 #endif
