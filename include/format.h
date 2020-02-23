@@ -4,8 +4,8 @@
 #include <string>
 
 namespace Format {
-std::string ElapsedTime(long times);  // TODO: See src/format.cpp
-std::string PadZeroInts(int); 
+std::string ElapsedTime(const long times);  
+std::string PadZeroInts(const int); 
 };                                    // namespace Format
 
 #endif
